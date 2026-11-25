@@ -117,6 +117,19 @@ if (UCHARDET_STATIC_LIBRARY)
 	)
 endif (UCHARDET_STATIC_LIBRARY)
 
+# Library the executables (CLI tool, tests) link against. By default they use
+# the static library, so they run without libuchardet.dll / libuchardet.so.0.
+# The shared library is still built and installed for library consumers.
+if (UCHARDET_STATIC_LIBRARY)
+	option(STATIC_EXECUTABLES "Link the executables against the static libuchardet." ON)
+endif ()
+if (STATIC_EXECUTABLES AND UCHARDET_STATIC_LIBRARY)
+	set (UCHARDET_EXE_LIBRARY ${UCHARDET_STATIC_LIBRARY})
+else ()
+	set (UCHARDET_EXE_LIBRARY ${UCHARDET_LIBRARY})
+endif ()
+set (UCHARDET_EXE_LIBRARY ${UCHARDET_EXE_LIBRARY} PARENT_SCOPE)
+
 set_target_properties(
 	${UCHARDET_LIBRARY}
 	PROPERTIES

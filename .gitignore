@@ -36,3 +36,10 @@ test/uchardet-tests.exe
 
 # For macOS (untested)
 src/libuchardet.dylib
+
+# Out-of-source build trees (build.cmd / build.sh)
+/build*/
+*.bak/
+
+# Claude working dir
+/claude/

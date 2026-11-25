@@ -1,3 +1,11 @@
+# A static (C++) libuchardet must be linked with the C++ driver, otherwise
+# libgcc/libstdc++ are added as plain -l flags and MinGW picks their DLLs.
+if (UCHARDET_EXE_LIBRARY STREQUAL UCHARDET_LIBRARY)
+	set(UCHARDET_TEST_LINKER_LANGUAGE C)
+else ()
+	set(UCHARDET_TEST_LINKER_LANGUAGE CXX)
+endif ()
+
 set(
 	UCHARDET_TEST_SOURCES
 	uchardet-tests.c
@@ -10,14 +18,14 @@ add_executable(
 
 target_link_libraries(
 	uchardet-tests
-	${UCHARDET_LIBRARY}
+	${UCHARDET_EXE_LIBRARY}
 )
 
 set_target_properties(
 	uchardet-tests
 	PROPERTIES
 		LINKER_LANGUAGE
-			C
+			${UCHARDET_TEST_LINKER_LANGUAGE}
 		OUTPUT_NAME
 			uchardet-tests
 )
@@ -29,14 +37,14 @@ add_executable(
 
 target_link_libraries(
 	uchardet-lifecycle-tests
-	${UCHARDET_LIBRARY}
+	${UCHARDET_EXE_LIBRARY}
 )
 
 set_target_properties(
 	uchardet-lifecycle-tests
 	PROPERTIES
 		LINKER_LANGUAGE
-			C
+			${UCHARDET_TEST_LINKER_LANGUAGE}
 )
 
 add_test(NAME "lifecycle" COMMAND uchardet-lifecycle-tests)

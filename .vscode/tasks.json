@@ -1,0 +1,112 @@
+{
+    // Build tasks for uchardet. Run via "Terminal > Run Task..." or Ctrl+Shift+B.
+    //   build.cmd           Windows targets (MSYS2 mingw32 / mingw64 / ucrt64)
+    //   build-wsl.cmd       Linux target via build.sh in WSL
+    //                       (distro: env UCHARDET_WSL_DISTRO, else WSL default)
+    //   build-target.cmd    one target by name, e.g. "mingw32-release"
+    //   build+test-all.cmd  build + test every target, prints a summary
+    //
+    // The target picker "BuildTargetsIn" needs the VS Code extension
+    // augustocdias.tasks-shell-input (list comes from "build-target.cmd --list").
+    "version": "2.0.0",
+    "options": {
+        "cwd": "${workspaceFolder}"
+    },
+    "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+    },
+    "tasks": [
+        {
+            "label": "Build target ...",
+            "detail": "Pick target (linux-*, mingw32-*, mingw64-*, ucrt64-*) and action",
+            "type": "process",
+            "command": "${workspaceFolder}\\build-target.cmd",
+            "args": ["${input:BuildTargetsIn}", "${input:action}"],
+            "group": "build",
+            "problemMatcher": { "base": "$gcc", "fileLocation": "autoDetect" }
+        },
+        {
+            "label": "Build+test all targets",
+            "detail": "build+test-all.cmd: Linux (WSL) + mingw32/mingw64/ucrt64, Debug + Release",
+            "type": "process",
+            "command": "${workspaceFolder}\\build+test-all.cmd",
+            "group": "test",
+            "problemMatcher": { "base": "$gcc", "fileLocation": "autoDetect" }
+        },
+        {
+            "label": "Build+test all targets (clean rebuild)",
+            "type": "process",
+            "command": "${workspaceFolder}\\build+test-all.cmd",
+            "args": ["--rebuild"],
+            "group": "test",
+            "problemMatcher": { "base": "$gcc", "fileLocation": "autoDetect" }
+        },
+        {
+            "label": "Windows: build (ucrt64 Release)",
+            "type": "process",
+            "command": "${workspaceFolder}\\build.cmd",
+            "args": ["ucrt64", "Release", "build"],
+            "group": { "kind": "build", "isDefault": true },
+            "problemMatcher": { "base": "$gcc", "fileLocation": "autoDetect" }
+        },
+        {
+            "label": "Windows: build ...",
+            "detail": "Pick MSYS2 environment, configuration and action",
+            "type": "process",
+            "command": "${workspaceFolder}\\build.cmd",
+            "args": ["${input:winEnv}", "${input:config}", "${input:action}"],
+            "group": "build",
+            "problemMatcher": { "base": "$gcc", "fileLocation": "autoDetect" }
+        },
+        {
+            "label": "Linux (WSL): build ...",
+            "detail": "build-wsl.cmd - distro from UCHARDET_WSL_DISTRO or WSL default",
+            "type": "process",
+            "command": "${workspaceFolder}\\build-wsl.cmd",
+            "args": ["${input:config}", "${input:action}"],
+            "group": "build",
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": ["relative", "${workspaceFolder}"]
+            }
+        }
+    ],
+    "inputs": [
+        { // BuildTargetsIn
+            "id": "BuildTargetsIn",
+            "type": "command",
+            "command": "shellCommand.execute",
+            "args": {
+                "command": ".\\build-target.cmd --list",
+                "cwd": "${workspaceFolder}",
+                "fieldSeparator": "|",
+                "description": "Select Target",
+                "taskId": "BuildTargetsIn",
+                "rememberPrevious": true
+            }
+        },
+        {
+            "id": "winEnv",
+            "type": "pickString",
+            "description": "MSYS2 environment",
+            "options": ["ucrt64", "mingw64", "mingw32", "all"],
+            "default": "ucrt64"
+        },
+        {
+            "id": "config",
+            "type": "pickString",
+            "description": "Build configuration",
+            "options": ["Release", "Debug"],
+            "default": "Release"
+        },
+        {
+            "id": "action",
+            "type": "pickString",
+            "description": "Action",
+            "options": ["build", "test", "rebuild", "clean"],
+            "default": "build"
+        }
+    ]
+}

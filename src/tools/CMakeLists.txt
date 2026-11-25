@@ -29,7 +29,7 @@ endif (GETOPT_INCLUDE_DIR AND GETOPT_LIBRARY)
 
 target_link_libraries(
 	${UCHARDET_BINARY}
-	${UCHARDET_LIBRARY}
+	${UCHARDET_EXE_LIBRARY}
 )
 
 install(

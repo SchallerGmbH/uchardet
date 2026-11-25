@@ -14,9 +14,29 @@ set (UCHARDET_VERSION_REVISION 8)
 
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     set(version_suffix .debug)
-    add_compile_options("-fsanitize=address")
-    add_link_options("-fsanitize=address")
+    # MinGW-w64 GCC (MSYS2 mingw32/mingw64/ucrt64) ships no libasan.
+    if (NOT MINGW)
+        add_compile_options("-fsanitize=address")
+        add_link_options("-fsanitize=address")
+    endif (NOT MINGW)
 endif (CMAKE_BUILD_TYPE MATCHES Debug)
+
+# MinGW: link the GCC runtime (libgcc, libstdc++, libwinpthread) statically.
+# Otherwise the binaries depend on libstdc++-6.dll, libgcc_s_*.dll and
+# libwinpthread-1.dll from the MSYS2 toolchain and fail to start (silently,
+# STATUS_DLL_NOT_FOUND) when run outside an MSYS2 shell.
+if (MINGW)
+    option(MINGW_STATIC_RUNTIME "Link the GCC runtime statically (MinGW)." ON)
+    if (MINGW_STATIC_RUNTIME)
+        add_link_options(-static)
+    endif ()
+endif (MINGW)
+
+# Put all executables (and on Windows the DLL) into <build>/bin on every
+# platform. On Windows there is no rpath, so the DLL must sit next to the exes.
+if (NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+endif ()
 
 set (
 	UCHARDET_VERSION
