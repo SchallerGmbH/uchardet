@@ -23,6 +23,17 @@ Each entry is listed as **date · branch** and grouped by type:
 
 ## Unreleased
 
+### 25.11.2026 · `cchardet`
+
+- **build** · New `gh-release.sh [TAG]` / `gh-release.cmd [TAG]` (default `v0.8.0`, same behaviour): copies the
+  Release binaries of all 4 platforms to `dist/` (`uchardet-<TAG>-win32-mingw32.exe`, `-win64-mingw64.exe`,
+  `-win64-ucrt64.exe`, `-linux-x86_64`) and creates the GitHub release with `gh release create`
+  (notes: `claude/00/release-<TAG>.md`). Stops before `gh` runs if `gh`, the release notes or a build output is
+  missing. Runs from any folder.
+- **build** · `.gitignore`: `/dist/`.
+
+## v0.8.0
+
 ### 25.11.2026 · `vscode/win+wsl`
 
 - **fix** · Windows binaries printed nothing (`-v`, `-h`, …) outside an MSYS2 shell: `libstdc++-6.dll`,
